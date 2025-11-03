@@ -29,6 +29,7 @@ func main() {
 	// Define routes
 	router.POST("/signup", authHandlers.Signup)
 	router.POST("/confirm-email", authHandlers.ConfirmEmail)
+	router.POST("/resend-confirmation-code", authHandlers.ResendConfirmationCode)
 	router.POST("/signin", authHandlers.Signin)
 	router.GET("/users", authHandlers.ListUsers)
 	// router.POST("/signout", authHandlers.Signout)

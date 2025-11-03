@@ -8,7 +8,8 @@ import (
 
 type AuthService interface {
 	Signup(user *models.User) error
-	ConfirmEmail(email, code string) (string, error)
+	ConfirmEmail(email, code string) error
+	ResendConfirmationCode(email string) error
 	Signin(email, password string) (string, error)
 	ListUsers() ([]types.UserType, error)
 }
@@ -34,15 +35,32 @@ func (a *authService) Signup(user *models.User) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func (a *authService) ConfirmEmail(email, code string) (string, error) {
-	return "", nil
+func (a *authService) ConfirmEmail(email, code string) error {
+	err := a.cognitoClient.ConfirmEmail(email, code)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *authService) ResendConfirmationCode(email string) error {
+	err := a.cognitoClient.ResendConfirmationCode(email)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *authService) Signin(email, password string) (string, error) {
-	return "", nil
+	return "token", nil
 }
 
 func (a *authService) ListUsers() ([]types.UserType, error) {

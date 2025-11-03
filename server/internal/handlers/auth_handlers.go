@@ -33,7 +33,38 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "signup successful", "user": user.Email})
 }
 
-func (h *AuthHandler) ConfirmEmail(c *gin.Context) {}
+func (h *AuthHandler) ConfirmEmail(c *gin.Context) {
+	var params struct {
+		Email string `form:"email" binding:"required,email"`
+		Code  string `form:"code" binding:"required"`
+	}
+
+	c.ShouldBind(&params)
+	err := h.authService.ConfirmEmail(params.Email, params.Code)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Email confirmed successfully"})
+}
+
+func (h *AuthHandler) ResendConfirmationCode(c *gin.Context) {
+	var params struct {
+		Email string `form:"email" binding:"required,email"`
+	}
+
+	c.ShouldBind(&params)
+	err := h.authService.ResendConfirmationCode(params.Email)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Confirmation code resent successfully"})
+}
 
 func (h *AuthHandler) Signin(c *gin.Context) {}
 
