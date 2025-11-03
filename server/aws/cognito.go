@@ -71,14 +71,12 @@ func (c *cognitoService) Signup(user *models.User) error {
 		},
 	}
 
-	resp, err := c.cognitoClient.SignUp(context.TODO(), cognitoUser)
+	_, err := c.cognitoClient.SignUp(context.TODO(), cognitoUser)
 
 	if err != nil {
 		fmt.Println("Error during Cognito Signup: ", err)
 		return err
 	}
-
-	fmt.Println("Cognito Signup Response: ", resp)
 
 	return nil
 }
@@ -91,12 +89,10 @@ func (c *cognitoService) ConfirmEmail(email, password string) error {
 		ConfirmationCode: aws.String(password),
 	}
 
-	resp, err := c.cognitoClient.ConfirmSignUp(context.TODO(), confirmEmailInput)
+	_, err := c.cognitoClient.ConfirmSignUp(context.TODO(), confirmEmailInput)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("Cognito ConfirmEmail Response: ", resp)
 
 	return nil
 }
@@ -108,23 +104,23 @@ func (c *cognitoService) ResendConfirmationCode(email string) error {
 		Username:   aws.String(email),
 	}
 
-	resp, err := c.cognitoClient.ResendConfirmationCode(context.TODO(), resendCodeInput)
+	_, err := c.cognitoClient.ResendConfirmationCode(context.TODO(), resendCodeInput)
 
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("Cognito ResendConfirmationCode Response: ", resp)
 
 	return nil
 }
 
 func (c *cognitoService) Signin(email, password string) (string, error) {
 	initiateAuthInput := &cognitoidentityprovider.InitiateAuthInput{
+		ClientId: aws.String(c.AWSConfig.AppID),
 		AuthFlow: types.AuthFlowTypeUserPasswordAuth,
 		AuthParameters: map[string]string{
-			"USERNAME": email,
-			"PASSWORD": password,
+			"USERNAME":    email,
+			"PASSWORD":    password,
+			"SECRET_HASH": utils.ComputeSecretHash(email, c.AWSConfig.AppID, c.AWSConfig.ClientSecret),
 		},
 	}
 

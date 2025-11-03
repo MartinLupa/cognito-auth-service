@@ -11,6 +11,7 @@ type AuthService interface {
 	ConfirmEmail(email, code string) error
 	ResendConfirmationCode(email string) error
 	Signin(email, password string) (string, error)
+	Signout(accessToken string) error
 	ListUsers() ([]types.UserType, error)
 }
 
@@ -60,7 +61,22 @@ func (a *authService) ResendConfirmationCode(email string) error {
 }
 
 func (a *authService) Signin(email, password string) (string, error) {
-	return "token", nil
+	token, err := a.cognitoClient.Signin(email, password)
+
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+func (a *authService) Signout(accessToken string) error {
+	err := a.cognitoClient.Signout(accessToken)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *authService) ListUsers() ([]types.UserType, error) {

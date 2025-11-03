@@ -35,8 +35,8 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 
 func (h *AuthHandler) ConfirmEmail(c *gin.Context) {
 	var params struct {
-		Email string `form:"email" binding:"required,email"`
-		Code  string `form:"code" binding:"required"`
+		Email string `json:"email" binding:"required,email"`
+		Code  string `json:"code" binding:"required"`
 	}
 
 	c.ShouldBind(&params)
@@ -52,7 +52,7 @@ func (h *AuthHandler) ConfirmEmail(c *gin.Context) {
 
 func (h *AuthHandler) ResendConfirmationCode(c *gin.Context) {
 	var params struct {
-		Email string `form:"email" binding:"required,email"`
+		Email string `json:"email" binding:"required,email"`
 	}
 
 	c.ShouldBind(&params)
@@ -66,7 +66,40 @@ func (h *AuthHandler) ResendConfirmationCode(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Confirmation code resent successfully"})
 }
 
-func (h *AuthHandler) Signin(c *gin.Context) {}
+func (h *AuthHandler) Signin(c *gin.Context) {
+	var params struct {
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	c.ShouldBind(&params)
+
+	token, err := h.authService.Signin(params.Email, params.Password)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Signin successful", "token": token})
+}
+
+func (h *AuthHandler) Signout(c *gin.Context) {
+	var params struct {
+		AccessToken string `json:"access_token" binding:"required"`
+	}
+
+	c.ShouldBind(&params)
+
+	err := h.authService.Signout(params.AccessToken)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Signout successful"})
+}
 
 func (h *AuthHandler) ListUsers(c *gin.Context) {
 	users, err := h.authService.ListUsers()
