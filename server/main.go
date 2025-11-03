@@ -31,9 +31,8 @@ func main() {
 	router.POST("/confirm-email", authHandlers.ConfirmEmail)
 	router.POST("/resend-confirmation-code", authHandlers.ResendConfirmationCode)
 	router.POST("/signin", authHandlers.Signin)
+	router.POST("/verify-session", authHandlers.VerifySession)
 	router.POST("/signout", authHandlers.Signout)
-	router.GET("/users", authHandlers.ListUsers)
-	// router.POST("/reset-password", authHandlers.ResetPassword)
 
 	err = router.Run(cfg.Server.Port)
 	if err != nil {

@@ -24,8 +24,8 @@ type CognitoClient interface {
 	ConfirmEmail(email, code string) error
 	ResendConfirmationCode(email string) error
 	Signin(email, password string) (string, error)
+	VerifySession(accessToken string) error
 	Signout(accessToken string) error
-	ListUsers() ([]types.UserType, error)
 }
 
 type cognitoService struct {
@@ -64,10 +64,6 @@ func (c *cognitoService) Signup(user *models.User) error {
 				Name:  aws.String("email"),
 				Value: aws.String(user.Email),
 			},
-			{
-				Name:  aws.String("custom:custom_id"),
-				Value: aws.String(uuid.NewString()),
-			},
 		},
 	}
 
@@ -81,12 +77,12 @@ func (c *cognitoService) Signup(user *models.User) error {
 	return nil
 }
 
-func (c *cognitoService) ConfirmEmail(email, password string) error {
+func (c *cognitoService) ConfirmEmail(email, code string) error {
 	confirmEmailInput := &cognitoidentityprovider.ConfirmSignUpInput{
 		ClientId:         aws.String(c.AWSConfig.AppID),
 		SecretHash:       aws.String(utils.ComputeSecretHash(email, c.AWSConfig.AppID, c.AWSConfig.ClientSecret)),
 		Username:         aws.String(email),
-		ConfirmationCode: aws.String(password),
+		ConfirmationCode: aws.String(code),
 	}
 
 	_, err := c.cognitoClient.ConfirmSignUp(context.TODO(), confirmEmailInput)
@@ -134,6 +130,20 @@ func (c *cognitoService) Signin(email, password string) (string, error) {
 	return *resp.AuthenticationResult.AccessToken, nil
 }
 
+func (c *cognitoService) VerifySession(accessToken string) error {
+	fmt.Println("Verifying session for access token: ", accessToken)
+	getUserInput := &cognitoidentityprovider.GetUserInput{
+		AccessToken: aws.String(accessToken),
+	}
+
+	_, err := c.cognitoClient.GetUser(context.TODO(), getUserInput)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *cognitoService) Signout(accessToken string) error {
 	globalSignOutInput := &cognitoidentityprovider.GlobalSignOutInput{
 		AccessToken: aws.String(accessToken),
@@ -147,17 +157,4 @@ func (c *cognitoService) Signout(accessToken string) error {
 	fmt.Println("Cognito Signout Response: ", resp)
 
 	return nil
-}
-
-func (c *cognitoService) ListUsers() ([]types.UserType, error) {
-	params := &cognitoidentityprovider.ListUsersInput{
-		UserPoolId: aws.String(c.AWSConfig.UserPoolID),
-	}
-
-	listUserOutput, err := c.cognitoClient.ListUsers(context.TODO(), params)
-	if err != nil {
-		return nil, err
-	}
-
-	return listUserOutput.Users, nil
 }

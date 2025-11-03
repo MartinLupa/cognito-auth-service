@@ -84,14 +84,21 @@ func (h *AuthHandler) Signin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Signin successful", "token": token})
 }
 
-func (h *AuthHandler) Signout(c *gin.Context) {
-	var params struct {
-		AccessToken string `json:"access_token" binding:"required"`
+func (h *AuthHandler) VerifySession(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	err := h.authService.VerifySession(authHeader)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
 
-	c.ShouldBind(&params)
+	c.JSON(http.StatusOK, gin.H{"message": "Session is valid"})
+}
 
-	err := h.authService.Signout(params.AccessToken)
+func (h *AuthHandler) Signout(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	err := h.authService.Signout(authHeader)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -99,14 +106,4 @@ func (h *AuthHandler) Signout(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Signout successful"})
-}
-
-func (h *AuthHandler) ListUsers(c *gin.Context) {
-	users, err := h.authService.ListUsers()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Users listed successfully", "users": users})
 }

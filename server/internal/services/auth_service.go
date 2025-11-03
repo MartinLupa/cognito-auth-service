@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/MartinLupa/go-cognito-auth/aws"
 	"github.com/MartinLupa/go-cognito-auth/internal/models"
-	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
 )
 
 type AuthService interface {
@@ -11,8 +10,8 @@ type AuthService interface {
 	ConfirmEmail(email, code string) error
 	ResendConfirmationCode(email string) error
 	Signin(email, password string) (string, error)
+	VerifySession(accessToken string) error
 	Signout(accessToken string) error
-	ListUsers() ([]types.UserType, error)
 }
 
 type authService struct {
@@ -69,8 +68,8 @@ func (a *authService) Signin(email, password string) (string, error) {
 	return token, nil
 }
 
-func (a *authService) Signout(accessToken string) error {
-	err := a.cognitoClient.Signout(accessToken)
+func (a *authService) VerifySession(accessToken string) error {
+	err := a.cognitoClient.VerifySession(accessToken)
 
 	if err != nil {
 		return err
@@ -79,6 +78,12 @@ func (a *authService) Signout(accessToken string) error {
 	return nil
 }
 
-func (a *authService) ListUsers() ([]types.UserType, error) {
-	return a.cognitoClient.ListUsers()
+func (a *authService) Signout(accessToken string) error {
+	err := a.cognitoClient.Signout(accessToken)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
