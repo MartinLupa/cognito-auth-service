@@ -16,7 +16,7 @@ export function ResendOtpButton({ email }: { email: string }) {
   <button
    onClick={handleClick}
    disabled={isPending}
-   className="text-sm text-blue-600 hover:underline disabled:text-gray-400"
+   className="text-sm text-gray-400 underline hover:text-gray-100 disabled:text-gray-400"
   >
    {isPending ? 'Resending...' : 'Resend OTP'}
   </button>
