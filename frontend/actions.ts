@@ -63,6 +63,30 @@ export async function verifyOTPAction(prevState: any, formData: FormData) {
  }
 }
 
+export async function resendOTP(email: string) {
+ if (!email) {
+  return { error: 'Email is required to resend OTP.' }
+ }
+
+ try {
+  const response = await fetch(new URL(process.env.AUTH_SERVICE_OTP_RESEND_ENDPOINT || ''), {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ email }),
+  })
+
+  if (!response.ok) {
+   const error = await response.json()
+   return { error: error.error || 'Resend OTP failed' }
+  }
+
+  return { success: true }
+
+ } catch (error) {
+  return { error: 'Network error. Please try again.' }
+ }
+}
+
 export async function signinAction(prevState: any, formData: FormData) {
  const email = formData.get('email') as string
  const password = formData.get('password') as string

@@ -25,6 +25,7 @@ import { useActionState } from "react"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { Terminal } from "lucide-react"
 import { FaCheck } from "react-icons/fa"
+import { ResendOtpButton } from "./resend-otp-button"
 
 export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [state, formAction, isPending] = useActionState(verifyOTPAction, null)
@@ -85,7 +86,7 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
                     {isPending ? 'Logging in...' : 'Login'}
                   </Button>
                   <FieldDescription className="text-center">
-                    Didn&apos;t receive the code? <a href="#">Resend</a>
+                    Didn&apos;t receive the code? <ResendOtpButton email={email || ""} />
                   </FieldDescription>
                 </FieldGroup>
               </FieldGroup>
