@@ -84,9 +84,6 @@ export async function signinAction(prevState: any, formData: FormData) {
   }
 
   const data = await response.json()
-
-  console.log("Data from login response: ", data)
-
   const cookieStore = await cookies()
   cookieStore.set('session_token', data.token, { httpOnly: true, path: '/' })
 

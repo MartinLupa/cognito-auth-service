@@ -2,7 +2,6 @@ package aws
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/MartinLupa/go-cognito-auth/aws/utils"
 	"github.com/MartinLupa/go-cognito-auth/config"
@@ -128,7 +127,6 @@ func (c *cognitoService) Signin(email, password string) (string, error) {
 }
 
 func (c *cognitoService) VerifySession(accessToken string) error {
-	fmt.Println("Verifying session for access token: ", accessToken)
 	getUserInput := &cognitoidentityprovider.GetUserInput{
 		AccessToken: aws.String(accessToken),
 	}
