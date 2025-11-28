@@ -33,7 +33,7 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   if (state?.success) {
     setTimeout(() => {
-      redirect("/login")
+      redirect("/signin")
     }, 3000);
   }
 

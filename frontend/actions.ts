@@ -107,8 +107,7 @@ export async function signoutAction() {
  try {
   const response = await fetch(new URL(process.env.AUTH_SERVICE_SIGNOUT_ENDPOINT || ''), {
    method: 'POST',
-   headers: { 'Content-Type': 'application/json' },
-   body: JSON.stringify({ access_token: token }),
+   headers: { 'Content-Type': 'application/json', 'Authorization': `${token}` },
   })
 
   if (!response.ok) {

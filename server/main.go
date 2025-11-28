@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/MartinLupa/go-cognito-auth/aws"
@@ -12,7 +11,6 @@ import (
 )
 
 func main() {
-	// Load general config
 	cfg, err := config.Load()
 
 	if err != nil {
@@ -24,9 +22,6 @@ func main() {
 	authService := services.NewAuthService(cognitoClient)
 	authHandlers := handlers.NewAuthHandlers(authService)
 
-	fmt.Println("Cognito Service:", cognitoClient)
-
-	// Define routes
 	router.POST("/signup", authHandlers.Signup)
 	router.POST("/confirm-email", authHandlers.ConfirmEmail)
 	router.POST("/resend-confirmation-code", authHandlers.ResendConfirmationCode)

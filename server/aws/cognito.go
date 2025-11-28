@@ -70,7 +70,6 @@ func (c *cognitoService) Signup(user *models.User) error {
 	_, err := c.cognitoClient.SignUp(context.TODO(), cognitoUser)
 
 	if err != nil {
-		fmt.Println("Error during Cognito Signup: ", err)
 		return err
 	}
 
@@ -125,8 +124,6 @@ func (c *cognitoService) Signin(email, password string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("Cognito Signin Response: ", resp)
-
 	return *resp.AuthenticationResult.AccessToken, nil
 }
 
@@ -149,12 +146,10 @@ func (c *cognitoService) Signout(accessToken string) error {
 		AccessToken: aws.String(accessToken),
 	}
 
-	resp, err := c.cognitoClient.GlobalSignOut(context.TODO(), globalSignOutInput)
+	_, err := c.cognitoClient.GlobalSignOut(context.TODO(), globalSignOutInput)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("Cognito Signout Response: ", resp)
 
 	return nil
 }

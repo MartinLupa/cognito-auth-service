@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const protectedPaths = ['/logged']
+const protectedPaths = ['/protected']
 
 export async function middleware(request: NextRequest) {
  if (protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path))) {
   const authCookie = request.cookies.get('session_token')
 
   if (!authCookie) {
-   const loginUrl = new URL('/login', request.url)
+   const loginUrl = new URL('/signin', request.url)
    return Response.redirect(loginUrl.toString())
   }
 
@@ -21,13 +21,13 @@ export async function middleware(request: NextRequest) {
    })
 
    if (!response.ok) {
-    const loginUrl = new URL('/login', request.url)
+    const loginUrl = new URL('/signin', request.url)
     return Response.redirect(loginUrl.toString())
    }
 
   } catch (error) {
    console.error('Error validating JWT:', error)
-   const loginUrl = new URL('/login', request.url)
+   const loginUrl = new URL('/signin', request.url)
    return Response.redirect(loginUrl.toString())
   }
 
